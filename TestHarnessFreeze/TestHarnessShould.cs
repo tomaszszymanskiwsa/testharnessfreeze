@@ -10,7 +10,7 @@ public class TestHarnessShould
 {
     
     [Fact]
-    public async Task TestHarnessShould_GetEventsCorrectly()
+    public async Task TestHarnessShould_GetEventsOfTypeTCorrectly()
     {
         // Arrange
         await using var provider = new ServiceCollection()
@@ -31,9 +31,12 @@ public class TestHarnessShould
         await harness.Start();
         await harness.Bus.Publish(fooEvent);
 
-        var events = harness.Published.Select(x => true).ToArray();
-
+        var events = harness.Published
+            .Select(x => x.MessageObject.GetType() == typeof(FooEvent))
+            .Select(x => (FooEvent)x.MessageObject)
+            .ToArray();
+        
         // Assert
-        events.Any().Should().BeTrue();
+        (events.First().MessageId == fooEvent.MessageId).Should().BeTrue();
     }
 }
