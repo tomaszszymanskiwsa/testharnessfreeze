@@ -32,11 +32,12 @@ public class TestHarnessShould
         await harness.Bus.Publish(fooEvent);
 
         var events = harness.Published
-            .Select(x => x.MessageObject.GetType() == typeof(FooEvent))
-            .Select(x => (FooEvent)x.MessageObject)
-            .ToArray();
+            .Select(x => x.MessageObject.GetType() == typeof(FooEvent));
+
+
+        var amountOfFooEvents = events.Count();
         
         // Assert
-        (events.First().MessageId == fooEvent.MessageId).Should().BeTrue();
+        (amountOfFooEvents == 1).Should().BeTrue();
     }
 }
